@@ -3,7 +3,8 @@ package projects.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import projects.exeption.DbException;
+
+import projects.exception.DbException;
 
 public class DbConnection {
 private static String HOST = "localhost";
