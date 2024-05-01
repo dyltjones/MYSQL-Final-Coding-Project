@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.spi.AbstractResourceBundleProvider;
+
+import javax.management.loading.PrivateClassLoader;
+import javax.sound.sampled.Line;
+
 import projects.entity.Project;
 import projects.exception.DbException;
 import projects.service.ProjectService;
@@ -18,9 +23,14 @@ import projects.service.ProjectService;
 public class ProjectsApp {
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
+	private Project curProject;
+
+	
 	// @formatter:off
 			private List<String> operations = List.of(
-					"1) Add a project"
+					"1) Add a project",
+					"2) List projects",
+					"3) Select a project"
 					);
 			// @formatter:on
 	
@@ -54,6 +64,12 @@ public class ProjectsApp {
 			case 1:
 				createProject();
 				break;
+			case 2:
+				listProjects();
+				break;
+			case 3:
+				selectProject();
+				break;
 			default:
 				System.out.println("\n" + selection + " is not a valid selection. Try again.");
 				break;
@@ -64,6 +80,9 @@ public class ProjectsApp {
 		}
 		}
 	}
+	/**
+	 * Gather user input for a project row then call the project service to create the row.
+	 */
 	private void createProject() {
 		String projectName = getStringInput("Enter the project name");
 		BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours");
@@ -102,14 +121,24 @@ public class ProjectsApp {
 			return new BigDecimal(input).setScale(2);
 			}
 		catch(NumberFormatException e) {
-			throw new DbException(input + " ;is not a valid decimal number.");
+			throw new DbException(input + " is not a valid decimal number.");
 	}
 	}
+	/**
+	 * Called when the user wants to exit the application. It prints a message and returns to terminated the app
+	 * @return
+	 */
 	private boolean exitMenu() {
 		System.out.println("Exiting the menu.");
 		return true;
 	}
 	
+	/** 
+	 * prints the available menu selections. It then gets the user's menu selection 
+	 * from the console and converts it to an int.
+	 * 
+	 * @return
+	 */
 	private int getUserSelection() {
 		printOperations();
 		
@@ -117,7 +146,12 @@ public class ProjectsApp {
 		
 		return Objects.isNull(input) ? -1 : input;
 	}
-	
+	/**
+	 * prints a prompt on the console and then gets user's input from the console. 
+	 * then coverts the input into an int. 
+	 * @param prompt
+	 * @return
+	 */
 	private Integer getIntInput(String prompt) {
 		String input = getStringInput(prompt);
 		
@@ -131,26 +165,59 @@ public class ProjectsApp {
 			throw new DbException(input + " is not a valid number.");
 		}
 	}
-	
+	/**
+	 *  Prints a prompt on the console and then gets the  users
+	 *  input from the console. If the user enters nothing {@code null} is returned.  
+	 *  Othersie, the trimmed input is returned.
+	 * @param prompt
+	 * @return
+	 */
 	private String getStringInput(String prompt) {
 	System.out.println(prompt + ": ");
 	String input = scanner.nextLine();
 	
 	return input.isBlank() ? null : input.trim();
 	}
+	// Print the menu selections, one per line. 
+
+	private void selectProject() {
+		listProjects();
+		Integer projectId = getIntInput("Enter a project Id to select a project");
+		
+		curProject = null;
+		
+		curProject = projectService.fetchProjectById(projectId);	
+	}
+	
+	private void listProjects() {
+		List<Project> projects = projectService.fetchAllProjects();
+		
+		System.out.println("\nProjects: ");
+		
+		projects.forEach(project -> System.out.println("   " + project.getProjectId() + ": " + project.getProjectName()));
+	}
 	
 	private void printOperations() {
-		System.out.println("\nThese are the available selections. Press the Enter key to quit:");
+		System.out.println("\nThese aer the available selections. Press the Enter key to quit:");
 		
 		/* With Lambda expression */
-		operations.forEach(line -> System.out.println(" " + line));
+		operations.forEach(line -> System.out.println("  " + line));
 		
 		/* With enhanced for loop */
 		// for(String line : operations) {
 		// System.out.println(" " + line;
 		// }
+		
+		if(Objects.isNull(curProject)) {
+			System.out.println("\nYou are not working with a project.");
+		}
+		else {
+			System.out.println("\nYou are working with project: " + curProject);
+		}
 	}
+
 }
+
 
 
 
