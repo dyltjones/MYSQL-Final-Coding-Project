@@ -3,7 +3,13 @@ package projects.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import projects.exception.DbException;
+
+/**
+ * manages the database connection for app. Provides methods 
+ * to open and close connections. 
+ */
 
 public class DbConnection {
 private static String HOST = "localhost";

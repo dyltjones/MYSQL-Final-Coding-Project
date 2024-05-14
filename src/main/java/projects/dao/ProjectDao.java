@@ -19,7 +19,10 @@ import projects.exception.DbException;
 import provided.util.DaoBase;
 
 /**
- * This class uses JDBC to perform CRUD operations on  project tables.
+ * DAO (Data access Object
+ * handles all database operations for Project objects.
+ *  using JDBC to perform CRUD operations
+ * 
  */
 @SuppressWarnings("unused")
 public class ProjectDao extends DaoBase {
@@ -31,10 +34,7 @@ public class ProjectDao extends DaoBase {
 
 	
 	/**
-	 *  Insert a project row into the project table.
-	 *  
-	 * @param project
-	 * @return
+	 *  Insert a project row into the database returns the project with its ID
 	 */
 	
 	
@@ -74,7 +74,11 @@ public class ProjectDao extends DaoBase {
 			throw new DbException(e);
 		}
 	}
-	
+	/**
+	 * 
+	 * retrieves all projects from the database 
+	 * @return List<Project> a list of all projects
+	 */
 public List<Project> fetchAllProjects() {
 	String sql = "SELECT * FROM " + PROJECT_TABLE + " ORDER BY project_name";
 	
@@ -100,6 +104,13 @@ public List<Project> fetchAllProjects() {
 		throw new DbException(e);
 	}
 }
+
+/**
+ * 
+ * Fetches a single project by it's ID
+ * @param projectId
+ * @return Optional<Project> if found 
+ */
 public Optional<Project> fetchProjectById(Integer projectId) {
 	String sql = "SELECT * FROM " + PROJECT_TABLE + " WHERE project_id = ?";
 	
@@ -136,6 +147,14 @@ public Optional<Project> fetchProjectById(Integer projectId) {
 	}
 	
 }
+
+/**
+ *  fetches all categories associated with a project from the database 
+ * @param conn
+ * @param projectId
+ * @return List<Category> 
+ * @throws SQLException 
+ */
 private List<Category> fetchCategoriesForProject(Connection conn,
 		Integer projectId) throws SQLException {
 	// @formatter:off
@@ -158,8 +177,16 @@ private List<Category> fetchCategoriesForProject(Connection conn,
 		}
 	}
 }
+
+/**
+ * fetches all the steps associated  with a project 
+ * @param conn
+ * @param projectId
+ * @return List<Step>
+ * @throws SQLException
+ */
 private List<Step> fetchStepsForProject(Connection conn, Integer projectId) throws SQLException {
-	String sql = "SELECT * FROM " + STEP_TABLE + " WHERE project_id = ?";
+	String sql = "SELECT * FROM  " + STEP_TABLE + " WHERE project_id = ?";
 	
 	try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 		setParameter(stmt, 1, projectId, Integer.class);
@@ -175,6 +202,14 @@ private List<Step> fetchStepsForProject(Connection conn, Integer projectId) thro
 		
 	}
 }
+
+/**
+ * Fetches all materials associated with a project from database 
+ * @param conn
+ * @param projectId
+ * @return List<Material>
+ * @throws SQLException
+ */
 private List<Material> fetchMaterialsForProject(Connection conn, Integer projectId)
 	throws SQLException {
 	String sql = "SELECT * FROM " + MATERIAL_TABLE + " WHERE project_id = ?";
@@ -194,7 +229,91 @@ private List<Material> fetchMaterialsForProject(Connection conn, Integer project
 	}
 }
 
+/**
+ * 
+ * Updates the details of an existing project 
+ * @param project 
+ * @return boolean if the update was successful
+ */
+
+public boolean modifyProjectDetails(Project project) {
+	// @formatter:off
+	String sql = ""
+			+ "UPDATE " + PROJECT_TABLE + " SET "
+			+ "project_name = ?, "
+			+ "estimated_hours = ?, "
+			+ "actual_hours = ?, "
+			+ "difficulty = ?, "
+			+ "notes = ? "
+			+ "WHERE project_id = ?";
+	// @formatter:on
+	
+	try(Connection conn = DbConnection.getConnection()) {
+		startTransaction(conn);
+		
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			setParameter(stmt, 1, project.getProjectName(), String.class);
+			setParameter(stmt, 2, project.getEstimatedHours(), BigDecimal.class);
+			setParameter(stmt, 3, project.getActualHours(), BigDecimal.class);
+			setParameter(stmt, 4, project.getDifficulty(), Integer.class);
+			setParameter(stmt, 5, project.getNotes(), String.class);
+			setParameter(stmt, 6, project.getProjectId(), Integer.class);
+			
+			boolean modified = stmt.executeUpdate() == 1;
+			commitTransaction(conn);
+			
+			return modified;
+		}
+		catch(Exception e) {
+			rollbackTransaction(conn);
+			throw new DbException(e);
+		}
 	}
+	catch(SQLException e) {
+		throw new DbException(e);
+	}
+}
+/**
+ * 
+ * Deletes a project from the Database by it's ID
+ * @param projectId
+ * @return boolean if the project was successfully deleted
+ */
+public boolean deleteProject(Integer projectId) {
+    
+	// SQL DELETE statement
+	//@formatter:off
+    String sql = ""
+            + "DELETE FROM " + PROJECT_TABLE + " " 
+            + "WHERE project_id = ?";
+//@formatter:on
+    try (Connection conn = DbConnection.getConnection()) {
+        startTransaction(conn);
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Set the project ID parameter
+            setParameter(stmt, 1, projectId, Integer.class);
+
+            // Execute the deletion statement
+            boolean deleted = stmt.executeUpdate() == 1;
+            commitTransaction(conn);
+
+            return deleted;
+        } 
+        catch (Exception e) {
+            rollbackTransaction(conn);
+            throw new DbException(e);
+        }
+    } 
+    catch (SQLException e) {
+        throw new DbException(e);
+    }
+}
+
+}
+
+
+	
 
 
   

@@ -8,9 +8,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author Promineo
- *
+ * Represents a project with a project Id, name, associated category, steps and material. 
+ * also includes estimated and actual hours with a difficulty level 
+ * 
  */
+
 public class Project {
   private Integer projectId;
   private String projectName;
@@ -19,10 +21,15 @@ public class Project {
   private Integer difficulty;
   private String notes;
 
-  private List<Material> materials = new LinkedList<>();
-  private List<Step> steps = new LinkedList<>();
-  private List<Category> categories = new LinkedList<>();
+  private List<Material> materials = new LinkedList<Material>();
+  private List<Step> steps = new LinkedList<Step>();
+  private List<Category> categories = new LinkedList<Category>();
 
+  
+  /**
+   * 
+   * Setter and getters for project 
+   */
   public Integer getProjectId() {
     return projectId;
   }
@@ -82,7 +89,10 @@ public class Project {
   public List<Category> getCategories() {
     return categories;
   }
-
+/**
+ * provides String representation of the Project object 
+ * 
+ */
   @Override
   public String toString() {
     String result = "";
