@@ -1,14 +1,16 @@
 package projects.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import projects.dao.ProjectDao;
 import projects.entity.Project;
 import projects.exception.DbException;
 
-import java.util.NoSuchElementException;
-
-
+/**
+ * Provides service level methods for managing projects. including adding, fetching, updating, 
+ * and deleting projects. This class acts as a in between the DAO layer and the 
+ */
 
 
 public class ProjectService {

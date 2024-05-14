@@ -9,7 +9,10 @@ public class Step {
   private Integer projectId;
   private String stepText;
   private Integer stepOrder;
-
+/**
+ * getter and setters for Step
+ * 
+ */
   public Integer getStepId() {
     return stepId;
   }

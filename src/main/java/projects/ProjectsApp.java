@@ -214,7 +214,7 @@ public class ProjectsApp {
 	 * 
 	 */
 	private void printOperations() {
-		System.out.println("\nThese aer the available selections. Press the Enter key to quit:");
+		System.out.println("\nThese are the available selections. Press the Enter key to quit:");
 		
 		/* With Lambda expression */
 		operations.forEach(line -> System.out.println("  " + line));
