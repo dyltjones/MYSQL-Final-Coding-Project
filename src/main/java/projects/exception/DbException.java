@@ -1,8 +1,8 @@
 
-
 package projects.exception;
-/** 
- * exception class for handling database operation erros 
+
+/**
+ * exception class for handling database operation erros
  *
  */
 @SuppressWarnings("serial")
@@ -18,6 +18,6 @@ public class DbException extends RuntimeException {
 
 	public DbException(String message, Throwable cause) {
 		super(message, cause);
-	
+
 	}
 }
